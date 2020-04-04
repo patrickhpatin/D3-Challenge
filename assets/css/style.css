@@ -1,31 +1,154 @@
-.iframeContainer {
-  padding: 20px;
-  border: 1px solid #e3e3e3;
-}
+  .obesity-tooltip {
+    position: absolute;
+    width: 135px;
+    height: 70px;
+    padding: 2px;
+    padding-top: 8px;
+    font: 12px sans-serif;
+    color: white;
+    text-align: center;
+    background: rgba(0, 0, 202, 0.7);
+    border: 0;
+    border-radius: 10px;
+  }
 
-/* Sticky Footer rules (https://getbootstrap.com/examples/sticky-footer/) */
-html {
-  position: relative;
-  min-height: 100%;
-}
+  .healthcare-tooltip {
+    position: absolute;
+    width: 135px;
+    height: 90px;
+    padding: 2px;
+    padding-top: 8px;
+    font: 12px sans-serif;
+    color: white;
+    text-align: center;
+    background: rgba(0, 102, 0, 0.8);
+    border: 0;
+    border-radius: 10px;
+  }
 
-body {
-  /* Padding bottom by footer height */
-  padding-bottom: 80px;
-}
+  .smokes-tooltip {
+    position: absolute;
+    width: 135px;
+    height: 70px;
+    padding: 2px;
+    padding-top: 8px;
+    font: 12px sans-serif;
+    color: white;
+    text-align: center;
+    background: rgba(207, 0, 0, 0.671);
+    border: 0;
+    border-radius: 10px;
+  }
+  
+  .axis-text {
+    font-family: sans-serif;
+    font-weight: bold;
+    fill: #551aaf;
+    text-anchor: middle;
+  }
 
-#footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%; /* Set the fixed height of the footer here */
-  height: 10px;
-  padding-top: 20px;
-  padding-bottom: 40px;
-  text-align: center;
-  background-color: #f5f5f5;
-}
+  .y {
+    font-family: sans-serif;
+    text-anchor: right;
+  }
+  
+  .active {
+    font-weight: 600;
+    font-size: 20px;
+    fill: #000;
+    fill: #551aaf;
+    transition: fill 0.3s ease-out;
+    text-anchor: middle;
+  }
+  
+  .x-active {
+    font-weight: 600;
+    font-size: 20px;
+    fill: #000;
+    fill: #000000;
+    transition: fill 0.3s ease-out;
+    text-anchor: middle;
+  }
 
-#footer p {
-  margin: 0;
-  font-size: 16px;
-}
+  .inactive {
+    font-weight: lighter;
+    fill: #000000;
+    transition: fill 0.3s ease-out;
+    text-anchor: middle;
+  }
+  
+  .inactive:hover {
+    fill: #e75480;
+    cursor: pointer;
+  }
+
+  .circle-text {
+      font-size: small;
+      fill: white;
+      text-anchor: middle;
+      z-index: -1;
+  }
+
+  .smoke-active {
+    font-weight: 600;
+    font-size: 20px;
+    fill: #000;
+    fill: red;
+    transition: fill 0.3s ease-out;
+    text-anchor: middle;
+  }
+
+  .health-active {
+    font-weight: 600;
+    font-size: 20px;
+    fill: #000;
+    fill: green;
+    transition: fill 0.3s ease-out;
+    text-anchor: middle;
+  }
+
+  .obese-active {
+    font-weight: 600;
+    font-size: 20px;
+    fill: #000;
+    fill: blue;
+    transition: fill 0.3s ease-out;
+    text-anchor: middle;
+  }
+
+  .obesity-y-axis {
+    stroke: blue;
+    transition: fill 1s ease-out;
+  }
+
+  .healthcare-y-axis {
+    stroke: green;
+  
+  }
+
+  .smokes-y-axis {
+    stroke: red;
+    transition: fill 1s ease-out;
+  }
+
+  h1 {
+    font-weight: 700;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 25px;
+    color: darkslategrey;
+  }
+
+  h5 {
+    font-weight: 300;
+    font-size: 16px;
+    color: darkslategrey;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .header {
+    padding-bottom: 0px;
+  }
+
+  .header-label {
+    padding-top: 0px;
+  }
