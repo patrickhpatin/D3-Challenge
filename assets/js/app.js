@@ -160,7 +160,7 @@ function makeResponsive() {
         .html(function (d) {
           return `<strong>${d.state}</strong><br>---------<br>${xlabel}${d[chosenXAxis]}<br>${ylabel}${d[chosenYaxis]}`;
         });
-      circlesGroup.call(toolTip);  
+      circlesGroup.call(toolTip);
       circlesGroup
         .on("mouseover", toolTip.show)
         .on("mouseout", toolTip.hide);
@@ -224,62 +224,52 @@ function makeResponsive() {
       var labelsGroup = chartGroup
         .append("g")
         .attr("transform", `translate(${width / 2}, ${height + 20})`);
-  
+      
+      // X Axis Labels
+      var ageLabel = labelsGroup
+      .append("text")
+      .attr("x", 0)
+      .attr("y", 20)
+      .attr("value", "age")
+      .classed("x-active", true)
+      .classed("axis-text", true)
+      .text("Age (Median)");
+
       var povertyLabel = labelsGroup
         .append("text")
         .attr("x", 0)
-        .attr("y", 60)
+        .attr("y", 45)
         .attr("value", "poverty")
         .classed("inactive", true)
         .classed("axis-text", true)
         .text("Poverty Level (%)");
-
-      var ageLabel = labelsGroup
-        .append("text")
-        .attr("x", 0)
-        .attr("y", 40)
-        .attr("value", "age")
-        .classed("x-active", true)
-        .classed("axis-text", true)
-        .text("Age (Median)");
   
       var incomeLabel = labelsGroup
         .append("text")
         .attr("x", 0)
-        .attr("y", 20)
+        .attr("y", 70)
         .attr("value", "income")
         .classed("inactive", true)
         .classed("axis-text", true)
         .text("Household Income (Median)");
-  
+      
+      // Y Axis Labels  
       var healthLabel = chartGroup
         .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", -100)
+        .attr("y", -50)
         .attr("x", -width / 2)
         .attr("value", "healthcare")
         .attr("dy", "1em")
         .classed("axis-text", true)
         .classed("y", true)
-        .classed("inactive", true)
+        .classed("health-active", true)
         .text("Lacks Healthcare (%)");
-  
-      var obeseLabel = chartGroup
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -75)
-        .attr("x", -width / 2)
-        .attr("value", "obesity")
-        .attr("dy", "1em")
-        .classed("axis-text", true)
-        .classed("y", true)
-        .classed("obese-active", true)
-        .text("Obese (%)");
   
       var smokeLabel = chartGroup
         .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", -50)
+        .attr("y", -75)
         .attr("x", -width / 2)
         .attr("value", "smokes")
         .attr("dy", "1em")
@@ -287,6 +277,18 @@ function makeResponsive() {
         .classed("y", true)
         .classed("inactive", true)
         .text("Smokes (%)");
+  
+      var obeseLabel = chartGroup
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -100)
+        .attr("x", -width / 2)
+        .attr("value", "obesity")
+        .attr("dy", "1em")
+        .classed("axis-text", true)
+        .classed("y", true)
+        .classed("inactive", true)
+        .text("Obese (%)");
   
       var ttip = "obesity-tooltip";
       var circlesGroup = updateToolTip(
