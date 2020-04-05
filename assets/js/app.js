@@ -126,42 +126,47 @@ function makeResponsive() {
     function updateToolTip(chosenXAxis, chosenYaxis, circlesGroup, ttip) {
       switch (chosenXAxis) {
         case "poverty":
-          var xlabel = "<strong>Poverty (%): </strong>";
+          xlabel = "<strong>Poverty (%): </strong>";
           break;
         case "age":
-          var xlabel = "<strong>Age (Median): </strong>";
+          xlabel = "<strong>Age (Median): </strong>";
           break;
         case "income":
-          var xlabel = "<strong>Household Income (median): $</strong>";
+          xlabel = "<strong>HH Income (Median): $</strong>";
           break;
       }
   
       switch (chosenYaxis) {
         case "healthcare":
-          var ylabel = "<strong>Lacks Healthcare (%): </strong>";
+          ylabel = "<strong>No Healthcare (%): </strong>";
           break;
         case "smokes":
-          var ylabel = "<strong>Smokes (%): </strong>";
+          ylabel = "<strong>Smokes (%): </strong>";
           break;
         case "obesity":
-          var ylabel = "<strong>Obese (%): </strong>";
+          ylabel = "<strong>Obese (%): </strong>";
           break;
       }
 
       // Define the div for the tooltip
-      var div = d3.select("body").append("div")	
+      var div = d3.select("body").append("div")
         .attr("class", "tooltip")				
         .style("opacity", 0);
 
-      var toolTip = d3
+        toolTip = d3
         .tip()
         .attr("class", `${ttip}`)
         .offset([90, -75])
         .html(function (d) {
-          return `<strong>${d.state}</strong><br>---------<br>${xlabel}${d[chosenXAxis]}<br>${ylabel}${d[chosenYaxis]}`;
+          return `<strong>${d.state}</strong><br>--- --- --- --- --- --- ---<br>${xlabel}${d[chosenXAxis].toLocaleString()}<br>${ylabel}${d[chosenYaxis]}`;
         });
       circlesGroup.call(toolTip);
+
       circlesGroup
+        .on("mouseover", toolTip.show)
+        .on("mouseout", toolTip.hide);
+
+      circleText
         .on("mouseover", toolTip.show)
         .on("mouseout", toolTip.hide);
   
@@ -209,7 +214,7 @@ function makeResponsive() {
         .attr("fill", "blue")
         .attr("opacity", "0.7");
   
-      var circleText = chartGroup
+      circleText = chartGroup
         .append("g")
         .selectAll("text")
         .data(stateData)
@@ -515,8 +520,12 @@ function makeResponsive() {
           }
         });
     });
-  }
-  
+  }  
+
+  var xlabel;
+  var ylabel;
+  var tooltip;
+  var circleText;
   makeResponsive();
   
   d3.select(window).on("resize", makeResponsive);
