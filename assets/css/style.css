@@ -1,6 +1,6 @@
   .obesity-tooltip {
     position: absolute;
-    width: 135px;
+    width: 200px;
     height: 70px;
     padding: 2px;
     padding-top: 8px;
@@ -14,8 +14,8 @@
 
   .healthcare-tooltip {
     position: absolute;
-    width: 135px;
-    height: 90px;
+    width: 200px;
+    height: 70px;
     padding: 2px;
     padding-top: 8px;
     font: 12px sans-serif;
@@ -28,7 +28,7 @@
 
   .smokes-tooltip {
     position: absolute;
-    width: 135px;
+    width: 200px;
     height: 70px;
     padding: 2px;
     padding-top: 8px;
