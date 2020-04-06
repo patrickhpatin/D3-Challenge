@@ -1,150 +1,142 @@
 function makeResponsive() {
+    // Select our SVG Area
     var svgArea = d3.select("#scatter").select("svg");
-  
+
+    // If it exists, delete it (we're going to recreate it anyway)
     if (!svgArea.empty()) {
       svgArea.remove();
     }
-  
+    
+    // Set our plot area
     var svgWidth = window.innerWidth;
-    var svgHeight = window.innerHeight - 128;
-  
+    var svgHeight = window.innerHeight - 250;
+    
+    // Set our margins - we will need this room for our axis labels
     var margin = {
       top: 100,
       bottom: 100,
       right: svgWidth / 2,
-      left: 125,
+      left: 100,
     };
-  
-    var height = svgHeight - margin.top - margin.bottom;
-    var width = svgWidth - margin.left - margin.right;
+    
+    // Calculate our actual chart dimensions minus the margins
+    var height = svgHeight - (margin.top + margin.bottom);
+    var width = svgWidth - (margin.left + margin.right);
     var svg = d3
       .select("#scatter")
       .append("svg")
       .attr("width", svgWidth)
       .attr("height", svgHeight);
-  
+    
+    // Position our chart group
     var chartGroup = svg
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
   
     // xScale function
-    function xScale(stateData, chosenXaxis) {
-      var xlinear = d3
+    function xScale(stateData, selectedXAxis) {
+      var xLinearScale = d3
         .scaleLinear()
         .domain([
-          d3.min(stateData, (d) => d[chosenXaxis]) -
+          d3.min(stateData, (d) => d[selectedXAxis]) -
             d3.max(
               stateData,
-              (d) => d[chosenXaxis] - d3.min(stateData, (d) => d[chosenXaxis])
+              (d) => d[selectedXAxis] - d3.min(stateData, (d) => d[selectedXAxis])
             ) /
               50,
-          d3.max(stateData, (d) => d[chosenXaxis]) +
+          d3.max(stateData, (d) => d[selectedXAxis]) +
             d3.max(
               stateData,
-              (d) => d[chosenXaxis] - d3.min(stateData, (d) => d[chosenXaxis])
+              (d) => d[selectedXAxis] - d3.min(stateData, (d) => d[selectedXAxis])
             ) /
               50,
         ])
         .range([0, width]);
-      return xlinear;
+      return xLinearScale;
     }
   
     //yScale function
-    function yScale(stateData, chosenYaxis) {
-      var ylinear = d3
+    function yScale(stateData, selectedYAxis) {
+      var yLinearScale = d3
         .scaleLinear()
         .domain([
-          d3.min(stateData, (d) => d[chosenYaxis]) -
+          d3.min(stateData, (d) => d[selectedYAxis]) -
             d3.max(
               stateData,
-              (d) => d[chosenYaxis] - d3.min(stateData, (d) => d[chosenYaxis])
-            ) /
-              10,
-          d3.max(stateData, (d) => d[chosenYaxis]) +
+              (d) => d[selectedYAxis] - d3.min(stateData, (d) => d[selectedYAxis])
+            ) * .1,
+          d3.max(stateData, (d) => d[selectedYAxis]) +
             d3.max(
               stateData,
-              (d) => d[chosenYaxis] - d3.min(stateData, (d) => d[chosenYaxis])
-            ) /
-              10,
+              (d) => d[selectedYAxis] - d3.min(stateData, (d) => d[selectedYAxis])
+            ) * .1,
         ])
         .range([height, 0]);
-      return ylinear;
+      return yLinearScale;
     }
   
-    // renderbottomaxis function
-    function renderXAxis(newXscale, xAxis) {
-      var bottomaxis = d3.axisBottom(newXscale);
-      xAxis.transition().duration(1000).call(bottomaxis);
+    // Transition bottom axis (X)
+    function transitionXAxis(newScale, xAxis) {
+      var bottomAxis = d3.axisBottom(newScale);
+      xAxis.transition().duration(1000).call(bottomAxis);
   
       return xAxis;
     }
   
-    //redner left axis funtion
-    function renderYAxis(newYscale, yAxis) {
-      var leftAxis = d3.axisLeft(newYscale);
+    // Transition left axis (Y)
+    function transitionYAxis(newScale, yAxis) {
+      var leftAxis = d3.axisLeft(newScale);
       yAxis.transition().duration(1000).call(leftAxis);
   
       return yAxis;
     }
   
-    //render circles function
-    function renderCircles(
-      circlesGroup,
-      newXscale,
-      newYscale,
-      chosenXAxis,
-      chosenYaxis,
-      color
-    ) {
+    // Draw circles
+    function drawCircles(circlesGroup, newXscale, newYscale, selectedXAxis, selectedYAxis, color) {
       circlesGroup
         .transition()
         .duration(1000)
-        .attr("cx", (d) => newXscale(d[chosenXAxis]))
-        .attr("cy", (d) => newYscale(d[chosenYaxis]))
-        .attr("r", 15)
+        .attr("cx", (d) => newXscale(d[selectedXAxis]))
+        .attr("cy", (d) => newYscale(d[selectedYAxis]))
+        .attr("r", 12)
         .attr("fill", color);
   
       return circlesGroup;
     }
   
-    function renderTextCircles(
-      circleText,
-      newXscale,
-      newYscale,
-      chosenXaxis,
-      chosenYaxis
-    ) {
+    function renderTextCircles(circleText, newXscale, newYscale, selectedXAxis, selectedYAxis) {
       circleText
         .transition()
         .duration(1000)
-        .attr("x", (d) => newXscale(d[chosenXaxis]))
-        .attr("y", (d) => newYscale(d[chosenYaxis]));
+        .attr("x", (d) => newXscale(d[selectedXAxis]))
+        .attr("y", (d) => newYscale(d[selectedYAxis]));
       return circleText;
     }
   
-    //updatetooltip funciton
-    function updateToolTip(chosenXAxis, chosenYaxis, circlesGroup, ttip) {
-      switch (chosenXAxis) {
+    // Set the tooltip for the circle (point)
+    function updateToolTip(selectedXAxis, selectedYAxis, circlesGroup, ttip) {
+      console.log(`Selected Y Axis is: '${selectedYAxis}'`);
+      switch (selectedXAxis) {
         case "poverty":
-          xlabel = "<strong>Poverty (%): </strong>";
+          xLabel = "<strong>Poverty (%): </strong>";
           break;
         case "age":
-          xlabel = "<strong>Age (Median): </strong>";
+          xLabel = "<strong>Median Age: </strong>";
           break;
         case "income":
-          xlabel = "<strong>HH Income (Median): $</strong>";
+          xLabel = "<strong>Median Household Income: $</strong>";
           break;
       }
   
-      switch (chosenYaxis) {
+      switch (selectedYAxis) {
         case "healthcare":
-          ylabel = "<strong>No Healthcare (%): </strong>";
+          yLabel = "<strong>Lacks Healthcare (%): </strong>";
           break;
         case "smokes":
-          ylabel = "<strong>Smokes (%): </strong>";
+          yLabel = "<strong>Smokes (%): </strong>";
           break;
         case "obesity":
-          ylabel = "<strong>Obese (%): </strong>";
+          yLabel = "<strong>Obese (%): </strong>";
           break;
       }
 
@@ -158,7 +150,7 @@ function makeResponsive() {
         .attr("class", `${ttip}`)
         .offset([90, -75])
         .html(function (d) {
-          return `<strong>${d.state}</strong><br>--- --- --- --- --- --- ---<br>${xlabel}${d[chosenXAxis].toLocaleString()}<br>${ylabel}${d[chosenYaxis]}`;
+          return `<strong>${d.state}</strong><br>--- --- --- --- --- --- ---<br>${xLabel}${d[selectedXAxis].toLocaleString()}<br>${yLabel}${d[selectedYAxis]}`;
         });
       circlesGroup.call(toolTip);
 
@@ -173,7 +165,7 @@ function makeResponsive() {
       return circlesGroup;
     }
   
-    // get csv data then execute stuff below
+    // get csv data then do a bunch of stuff
     d3.csv("./assets/data/data.csv").then( function(stateData) {
       console.log(stateData);
       stateData.forEach(function (d) {
@@ -185,10 +177,8 @@ function makeResponsive() {
         d.healthcare = +d.healthcare;
       });
   
-      var chosenXAxis = "age";
-      var chosenYaxis = "obesity";
-      var xLinScale = xScale(stateData, chosenXAxis);
-      var yLinScale = yScale(stateData, chosenYaxis);
+      var xLinScale = xScale(stateData, selectedXAxis);
+      var yLinScale = yScale(stateData, selectedYAxis);
       var bottomAxis = d3.axisBottom(xLinScale);
       var leftAxis = d3.axisLeft(yLinScale);
   
@@ -200,7 +190,7 @@ function makeResponsive() {
 
       var yAxis = chartGroup
         .append("g")
-        .classed("obesity-y-axis", true)
+        .classed("healthcare-y-axis", true)
         .call(leftAxis);
   
       var circlesGroup = chartGroup
@@ -208,10 +198,10 @@ function makeResponsive() {
         .data(stateData)
         .enter()
         .append("circle")
-        .attr("cx", (d) => xLinScale(d[chosenXAxis]))
-        .attr("cy", (d) => yLinScale(d[chosenYaxis]))
-        .attr("r", 15)
-        .attr("fill", "blue")
+        .attr("cx", (d) => xLinScale(d[selectedXAxis]))
+        .attr("cy", (d) => yLinScale(d[selectedYAxis]))
+        .attr("r", 12)
+        .attr("fill", "green")
         .attr("opacity", "0.7");
   
       circleText = chartGroup
@@ -221,14 +211,14 @@ function makeResponsive() {
         .enter()
         .append("text")
         .attr("class", "circle-text")
-        .attr("x", (d) => xLinScale(d[chosenXAxis]))
-        .attr("y", (d) => yLinScale(d[chosenYaxis]))
+        .attr("x", (d) => xLinScale(d[selectedXAxis]))
+        .attr("y", (d) => yLinScale(d[selectedYAxis]))
         .text((d) => d.abbr)
         .attr("dy", 4);
   
       var labelsGroup = chartGroup
         .append("g")
-        .attr("transform", `translate(${width / 2}, ${height + 20})`);
+        .attr("transform", `translate(${width / 2}, ${height + 15})`);
       
       // X Axis Labels
       var ageLabel = labelsGroup
@@ -265,6 +255,7 @@ function makeResponsive() {
         .attr("y", -50)
         .attr("x", -height / 2)
         .attr("value", "healthcare")
+        .classed("y-active", true)
         .attr("text-anchor","middle")
         .attr("dy", "1em")
         .classed("axis-text", true)
@@ -298,29 +289,30 @@ function makeResponsive() {
         .classed("inactive", true)
         .text("Obese (%)");
   
-      var ttip = "obesity-tooltip";
-      var circlesGroup = updateToolTip(
-        chosenXAxis,
-        chosenYaxis,
+      var ttip = "healthcare-tooltip";
+
+      // Without this line, the tooltip won't display when the page is first loaded
+      // But it will work when the axis is changed
+      circlesGroup = updateToolTip(
+        selectedXAxis,
+        selectedYAxis,
         circlesGroup,
         ttip
-      );
-  
-      var yvalue = "obesity";
+      );  
   
       d3.select("#scatter")
         .selectAll(".axis-text")
         .on("click", function () {
           var value = d3.select(this).attr("value");
-          var xitems = ["age", "poverty", "income"];
-          var yitems = ["healthcare", "smokes", "obesity"];
-  
-          if (yitems.includes(value)) {
-            yvalue = value;
+          var xItems = ["age", "poverty", "income"];
+          var yItems = ["healthcare", "smokes", "obesity"];
+          
+          if (yItems.includes(value)) {
+            yValue = value;
             ttip = value + "-tooltip";
           }
-  
-          switch (yvalue) {
+          
+          switch (yValue) {
             case "smokes":
               var color = "red";
               break;
@@ -332,35 +324,35 @@ function makeResponsive() {
               break;
           }
   
-          if (xitems.includes(value)) {
-            if (value !== chosenXAxis) {
-              chosenXAxis = value;
+          if (xItems.includes(value)) {
+            if (value !== selectedXAxis) {
+              selectedXAxis = value;
   
-              xLinScale = xScale(stateData, chosenXAxis);
-              xAxis = renderXAxis(xLinScale, xAxis);
-              circlesGroup = renderCircles(
+              xLinScale = xScale(stateData, selectedXAxis);
+              xAxis = transitionXAxis(xLinScale, xAxis);
+              circlesGroup = drawCircles(
                 circlesGroup,
                 xLinScale,
                 yLinScale,
-                chosenXAxis,
-                chosenYaxis,
+                selectedXAxis,
+                selectedYAxis,
                 color
               );
               circleText = renderTextCircles(
                 circleText,
                 xLinScale,
                 yLinScale,
-                chosenXAxis,
-                chosenYaxis
+                selectedXAxis,
+                selectedYAxis
               );
               circlesGroup = updateToolTip(
-                chosenXAxis,
-                chosenYaxis,
+                selectedXAxis,
+                selectedYAxis,
                 circlesGroup,
                 ttip
               );
   
-              switch (chosenXAxis) {
+              switch (selectedXAxis) {
                 case "age":
                   ageLabel.classed("x-active", true).classed("inactive", false);
                   povertyLabel
@@ -369,12 +361,12 @@ function makeResponsive() {
                   incomeLabel
                     .classed("x-active", false)
                     .classed("inactive", true);
-                  circlesGroup = renderCircles(
+                  circlesGroup = drawCircles(
                     circlesGroup,
                     xLinScale,
                     yLinScale,
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     color
                   );
                   break;
@@ -386,12 +378,12 @@ function makeResponsive() {
                   incomeLabel
                     .classed("x-active", false)
                     .classed("inactive", true);
-                  circlesGroup = renderCircles(
+                  circlesGroup = drawCircles(
                     circlesGroup,
                     xLinScale,
                     yLinScale,
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     color
                   );
                   break;
@@ -403,12 +395,12 @@ function makeResponsive() {
                     .classed("x-active", false)
                     .classed("inactive", true);
                   ageLabel.classed("x-active", false).classed("inactive", true);
-                  circlesGroup = renderCircles(
+                  circlesGroup = drawCircles(
                     circlesGroup,
                     xLinScale,
                     yLinScale,
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     color
                   );
                   break;
@@ -416,21 +408,21 @@ function makeResponsive() {
             }
           }
   
-          if (yitems.includes(value)) {
-            if (value !== chosenYaxis) {
-              chosenYaxis = value;
-              yLinScale = yScale(stateData, chosenYaxis);
-              yAxis = renderYAxis(yLinScale, yAxis);
+          if (yItems.includes(value)) {
+            if (value !== selectedYAxis) {
+              selectedYAxis = value;
+              yLinScale = yScale(stateData, selectedYAxis);
+              yAxis = transitionYAxis(yLinScale, yAxis);
   
               circleText = renderTextCircles(
                 circleText,
                 xLinScale,
                 yLinScale,
-                chosenXAxis,
-                chosenYaxis
+                selectedXAxis,
+                selectedYAxis
               );
   
-              switch (chosenYaxis) {
+              switch (selectedYAxis) {
                 case "smokes":
                   smokeLabel
                     .classed("smoke-active", true)
@@ -445,17 +437,17 @@ function makeResponsive() {
                     .classed("obesity-y-axis", false)
                     .classed("healthcare-y-axis", false)
                     .classed("smokes-y-axis", true);
-                  circlesGroup = renderCircles(
+                  circlesGroup = drawCircles(
                     circlesGroup,
                     xLinScale,
                     yLinScale,
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     color
                   );
                   circlesGroup = updateToolTip(
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     circlesGroup,
                     ttip
                   );
@@ -475,17 +467,17 @@ function makeResponsive() {
                     .classed("healthcare-y-axis", true)
                     .classed("smokes-y-axis", false);
                   circlesGroup = updateToolTip(
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     circlesGroup,
                     ttip
                   );
-                  circlesGroup = renderCircles(
+                  circlesGroup = drawCircles(
                     circlesGroup,
                     xLinScale,
                     yLinScale,
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     color
                   );
                   break;
@@ -504,17 +496,17 @@ function makeResponsive() {
                     .classed("healthcare-y-axis", false)
                     .classed("smokes-y-axis", false);
                   circlesGroup = updateToolTip(
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     circlesGroup,
                     ttip
                   );
-                  circlesGroup = renderCircles(
+                  circlesGroup = drawCircles(
                     circlesGroup,
                     xLinScale,
                     yLinScale,
-                    chosenXAxis,
-                    chosenYaxis,
+                    selectedXAxis,
+                    selectedYAxis,
                     color
                   );
                   break;
@@ -525,10 +517,14 @@ function makeResponsive() {
     });
   }  
 
-  var xlabel;
-  var ylabel;
+  var xLabel;
+  var yLabel;
   var tooltip;
   var circleText;
+  var selectedXAxis = "age";
+  var selectedYAxis = "healthcare";
+  var yValue = "healthcare";
+  
   makeResponsive();
   
   d3.select(window).on("resize", makeResponsive);
