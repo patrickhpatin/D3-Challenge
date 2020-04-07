@@ -124,7 +124,7 @@ function makeResponsive() {
           xLabel = "<strong>Median Age: </strong>";
           break;
         case "income":
-          xLabel = "<strong>Median Household Income: $</strong>";
+          xLabel = "<strong>Median HH Income: $</strong>";
           break;
       }
   
